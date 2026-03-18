@@ -1,21 +1,6 @@
-107.173.193.70 8080=443=8089
+
 =http-8080
 =https-443
-=     -8089    (another person)
 
-
-
-133.167.7.14   8080=443
 =http-8080
-=https-443      (another person)
-
-
-192.168.43.165 my ip
-
-
-10.0.2.15 =public server
- CST, 
- 
- 
- tcp
- udp
+=https-443     
