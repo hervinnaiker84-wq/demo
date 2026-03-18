@@ -1,0 +1,113 @@
+#!/usr/bin/awk -f
+
+# ---------- CONFIG ----------
+DB_FILE = "squares.db"
+
+# ---------- FUNCTIONS ----------
+function square(x) {
+    return x * x
+}
+
+function save_to_db(n, result) {
+    print n "," result >> DB_FILE
+}
+
+function show_db(line) {
+    print "=== DATABASE CONTENT ==="
+    while ((getline line < DB_FILE) > 0) {
+        print line
+    }
+    close(DB_FILE)
+}
+
+function clear_db() {
+    system("rm -f " DB_FILE)
+    print "Database cleared."
+}
+
+function copy_file(src, dest, cmd) {
+    cmd = "cp " src " " dest
+    system(cmd)
+    print "Copied " src " -> " dest
+}
+
+function show_help() {
+    print ""
+    print "Commands:"
+    print "  square N              -> calculate square"
+    print "  range A B             -> squares from A to B"
+    print "  save N                -> save square(N) to DB"
+    print "  showdb                -> display database"
+    print "  cleardb               -> clear database"
+    print "  copy SRC DEST         -> copy file"
+    print "  help                  -> show help"
+    print "  exit                  -> quit"
+    print ""
+}
+
+# ---------- START PANEL ----------
+BEGIN {
+    print "=== AWK Squares Panel Engine v2 ==="
+    show_help()
+    printf "> "
+}
+
+# ---------- MAIN LOOP ----------
+{
+    cmd = $1
+
+    if (cmd == "square") {
+        n = $2
+        if (n == "") {
+            print "Error: missing number"
+        } else {
+            print n "^2 =", square(n)
+        }
+
+    } else if (cmd == "range") {
+        start = $2
+        end = $3
+        if (start == "" || end == "") {
+            print "Error: need start and end"
+        } else {
+            for (i = start; i <= end; i++) {
+                print i "^2 =", square(i)
+            }
+        }
+
+    } else if (cmd == "save") {
+        n = $2
+        if (n == "") {
+            print "Error: missing number"
+        } else {
+            result = square(n)
+            save_to_db(n, result)
+            print "Saved:", n "^2 =", result
+        }
+
+    } else if (cmd == "showdb") {
+        show_db()
+
+    } else if (cmd == "cleardb") {
+        clear_db()
+
+    } else if (cmd == "copy") {
+        if ($2 == "" || $3 == "") {
+            print "Error: need source and destination"
+        } else {
+            copy_file($2, $3)
+        }
+
+    } else if (cmd == "help") {
+        show_help()
+
+    } else if (cmd == "exit") {
+        print "Exiting engine..."
+        exit
+
+    } else {
+        print "Unknown command. Type 'help'"
+    }
+
+    printf "\n> "
+}
