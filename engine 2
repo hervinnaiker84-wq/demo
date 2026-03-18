@@ -1,0 +1,60 @@
+BEGIN {
+    print "=== AWK Squares Panel Engine v2 ==="
+    show_help()
+
+    while (1) {
+        printf "> "
+        if ((getline line) <= 0) break
+
+        # split input into fields
+        split(line, f, " ")
+
+        cmd = f[1]
+
+        if (cmd == "square") {
+            n = f[2]
+            if (n == "") print "Error: missing number"
+            else print n "^2 =", square(n)
+
+        } else if (cmd == "range") {
+            start = f[2]
+            end = f[3]
+            if (start == "" || end == "") print "Error: need start and end"
+            else for (i = start; i <= end; i++)
+                print i "^2 =", square(i)
+
+        } else if (cmd == "save") {
+            n = f[2]
+            if (n == "") print "Error: missing number"
+            else {
+                result = square(n)
+                save_to_db(n, result)
+                print "Saved:", n "^2 =", result
+            }
+
+        } else if (cmd == "showdb") {
+            show_db()
+
+        } else if (cmd == "cleardb") {
+            clear_db()
+
+        } else if (cmd == "copy") {
+            if (f[2] == "" || f[3] == "")
+                print "Error: need source and destination"
+            else
+                copy_file(f[2], f[3])
+
+        } else if (cmd == "help") {
+            show_help()
+
+        } else if (cmd == "exit") {
+            print "Exiting engine..."
+            break
+
+        } else {
+            print "Unknown command. Type 'help'"
+        }
+    }
+
+    exit
+}
