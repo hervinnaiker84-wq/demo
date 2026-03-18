@@ -1,0 +1,50 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+    print "=== Demo Auto Function Engine ==="
+
+    # command → function map
+    cmd_map["hello"] = "do_hello"
+    cmd_map["add"]   = "do_add"
+    cmd_map["exit"]  = "do_exit"
+
+    while (1) {
+        printf "> "
+        if ((getline line) <= 0) break
+
+        $0 = line   # 🔥 auto split into $1, $2...
+
+        cmd = $1
+
+        if (cmd in cmd_map) {
+            run(cmd_map[cmd])
+        } else {
+            print "Unknown command"
+        }
+    }
+}
+
+# dispatcher
+function run(fn) {
+    if (fn == "do_hello") do_hello()
+    else if (fn == "do_add") do_add()
+    else if (fn == "do_exit") do_exit()
+}
+
+# functions
+function do_hello() {
+    print "Hello,", $2
+}
+
+function do_add() {
+    if ($2 == "" || $3 == "") {
+        print "Usage: add A B"
+    } else {
+        print "Result:", $2 + $3
+    }
+}
+
+function do_exit() {
+    print "Bye!"
+    exit
+}
